@@ -16,6 +16,8 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class ArticleFormType extends AbstractType
 {
@@ -50,12 +52,26 @@ class ArticleFormType extends AbstractType
                     'Interstellar Space' => 'interstellar_space'
                 ],
                 'required' => false,
-            ])
+            ]);
+
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '10M',
+            ]),
+        ];
+
+        $builder
             ->add('imageFile', FileType::class, [
                 'mapped' => false,
                 'required' => false,
-            ])
-        ;
+                'constraints' => $imageConstraints,
+            ]);
+
+        if (!$isEdit || !$article->getImageFilename()) {
+            $imageConstraints[] = new NotNull([
+                'message' => 'Please uploade an image!',
+            ]);
+        }
 
         if ($options['include_published_at']) {
             $builder->add('publishedAt', null, [
