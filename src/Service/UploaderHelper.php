@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploaderHelper
 {
+    const ARTICLE_IMAGE = 'article_images';
+
     private $uploadPath;
 
     public function __construct(string $uploadPath)
@@ -23,7 +25,7 @@ class UploaderHelper
      */
     public function uploadArticleImage(UploadedFile $uploadedFile): string
     {
-        $destination = $this->uploadPath . '/article_images';
+        $destination = $this->uploadPath . '/' . self::ARTICLE_IMAGE;
 
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         $newFilename = Urlizer::urlize($originalFilename . '-' . uniqid()) . '.' . $uploadedFile->guessExtension();
@@ -34,6 +36,15 @@ class UploaderHelper
         );
 
         return $newFilename;
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public function getPublicPath(string $path): string
+    {
+        return 'uploads/' . $path;
     }
 
 }
