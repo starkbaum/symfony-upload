@@ -8,6 +8,7 @@ use App\Entity\Tag;
 use App\Service\UploaderHelper;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use League\Flysystem\FileExistsException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -90,6 +91,7 @@ EOF
 
     /**
      * @return string
+     * @throws FileExistsException
      */
     private function fakeUploadImage(): string
     {

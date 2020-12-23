@@ -21,19 +21,27 @@ class UploaderHelper
     private $filesystem;
     private $requestStackContext;
     private $logger;
+    private $publicAssetBaseUrl;
 
     /**
      * UploaderHelper constructor.
      * @param FilesystemInterface $publicUploadFilesystem
      * @param RequestStackContext $requestStackContext
      * @param LoggerInterface $logger
+     * @param string $uploadedAssetsBaseUrl
      */
-    public function __construct(FilesystemInterface $publicUploadFilesystem, RequestStackContext $requestStackContext, LoggerInterface $logger)
+    public function __construct(
+        FilesystemInterface $publicUploadFilesystem,
+        RequestStackContext $requestStackContext,
+        LoggerInterface $logger,
+        string $uploadedAssetsBaseUrl
+    )
     {
 
         $this->filesystem = $publicUploadFilesystem;
         $this->requestStackContext = $requestStackContext;
         $this->logger = $logger;
+        $this->publicAssetBaseUrl = $uploadedAssetsBaseUrl;
     }
 
     /**
@@ -93,7 +101,7 @@ class UploaderHelper
     public function getPublicPath(string $path): string
     {
         return $this->requestStackContext
-            ->getBasePath() . '/uploads/' . $path;
+            ->getBasePath() . $this->publicAssetBaseUrl . '/' . $path;
     }
 
 }
