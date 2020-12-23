@@ -21,6 +21,7 @@ services:
             $markdownLogger: '@monolog.logger.markdown'
             $isDebug: '%kernel.debug%'
             $uploadPath: '%kernel.project_dir%/public/uploads'
+            $publicUploadFilesystem: '@oneup_flysystem.public_uploads_filesystem_filesystem'
 
     # custom aliases for autowiring
     Nexy\Slack\Client: '@nexy_slack.client'
