@@ -98,6 +98,29 @@ class UploaderHelper
     }
 
     /**
+     * @param string $path
+     * @param bool $isPublic
+     * @return resource
+     * @throws Exception
+     */
+    public function readStream(string $path, bool $isPublic)
+    {
+        $filesystem = $isPublic ? $this->filesystem : $this->privateFilesystem;
+
+        $resource = $filesystem->readStream($path);
+
+        if ($resource === false) {
+            throw new Exception(sprintf(
+                'Error opening stream for "%s"',
+                $path
+            ));
+        }
+
+
+        return $resource;
+    }
+
+    /**
      * @param File $file
      * @param string $directory
      * @param bool $isPublic

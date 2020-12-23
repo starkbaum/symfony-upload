@@ -88,4 +88,14 @@ class ArticleReferenceAdminController extends BaseController
             'id' => $article->getId(),
         ]);
     }
+
+    /**
+     * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods={"GET"})
+     * @param ArticleReference $articleReference
+     * @param UploaderHelper $uploaderHelper
+     */
+    public function downloadArticleReference(ArticleReference $articleReference, UploaderHelper $uploaderHelper)
+    {
+        
+    }
 }
