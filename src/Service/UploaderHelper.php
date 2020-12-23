@@ -94,6 +94,12 @@ class UploaderHelper
         return $newFilename;
     }
 
+
+    public function uploadArticleReference(File $file): string
+    {
+        dd($file);
+    }
+
     /**
      * @param string $path
      * @return string
@@ -103,5 +109,4 @@ class UploaderHelper
         return $this->requestStackContext
             ->getBasePath() . $this->publicAssetBaseUrl . '/' . $path;
     }
-
 }
