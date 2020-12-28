@@ -96,6 +96,8 @@ class ArticleReferenceAdminController extends BaseController
      */
     public function downloadArticleReference(ArticleReference $articleReference, UploaderHelper $uploaderHelper)
     {
-        
+        $article = $articleReference->getArticle();
+
+        $this->denyAccessUnlessGranted('MANAGE');
     }
 }
