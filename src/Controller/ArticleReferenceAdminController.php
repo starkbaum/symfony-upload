@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -139,6 +140,47 @@ class ArticleReferenceAdminController extends BaseController
         $response->headers->set('Content-Disposition', $disposition);
 
         return $response;
+    }
+
+    /**
+     * @Route("/admin/article/references/{id}", name="admin_article_update_reference", methods="PUT")
+     * @param ArticleReference $articleReference
+     * @param UploaderHelper $uploaderHelper
+     * @param EntityManagerInterface $entityManager
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return Response
+     */
+    public function updateArticleReference(
+        ArticleReference $articleReference,
+        UploaderHelper $uploaderHelper,
+        EntityManagerInterface $entityManager,
+        SerializerInterface $serializer,
+        Request $request
+    )
+    {
+        $serializer->deserialize(
+            $request->getContent(),
+            ArticleReference::class,
+            'json',
+            [
+                'object_to_populate' => $articleReference,
+                'groups' => ['input']
+
+            ]
+        );
+
+        $entityManager->persist($articleReference);
+        $entityManager->flush();
+
+        return $this->json(
+            $articleReference,
+            200,
+            [],
+            [
+                'groups' => ['main']
+            ]
+        );
     }
 
     /**

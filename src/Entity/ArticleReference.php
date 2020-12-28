@@ -28,7 +28,7 @@ class ArticleReference
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("main")
+     * @Groups({"main", "input"})
      */
     private $filename;
 
