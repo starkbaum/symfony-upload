@@ -8,11 +8,13 @@ use App\Entity\Article;
 use App\Entity\ArticleReference;
 use App\Service\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
@@ -137,5 +139,23 @@ class ArticleReferenceAdminController extends BaseController
         $response->headers->set('Content-Disposition', $disposition);
 
         return $response;
+    }
+
+    /**
+     * @Route("/admin/article/references/{id}", name="admin_article_delete_references", methods="DELETE")
+     * @param ArticleReference $articleReference
+     * @param UploaderHelper $uploaderHelper
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     * @throws FileNotFoundException
+     */
+    public function deleteArticleReference(ArticleReference $articleReference, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager)
+    {
+        $entityManager->remove($articleReference);
+        $entityManager->flush();
+
+        $uploaderHelper->deleteFile($articleReference->getFilePath(), false);
+
+        return new Response(null, 204);
     }
 }
