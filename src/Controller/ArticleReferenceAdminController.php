@@ -41,7 +41,7 @@ class ArticleReferenceAdminController extends BaseController
         /** @var UploadedFile $uploadedFile */
         $uploadedFile = $request->files->get('reference');
 
-        dump($uploadedFile);
+        //dump($uploadedFile);
 
         $violations = $validator->validate(
             $uploadedFile,
@@ -66,16 +66,7 @@ class ArticleReferenceAdminController extends BaseController
         );
 
         if ($violations->count() > 0) {
-
-            /** @var ConstraintViolation $violation */
-            $violation = $violations[0];
-
-            $this->addFlash('error', $violation->getMessage());
-
-            return $this->redirectToRoute('admin_article_edit', [
-                'id' => $article->getId(),
-            ]);
-
+            return $this->json($violations, 400);
         }
 
         $filename = $uploaderHelper->uploadArticleReference($uploadedFile);
@@ -88,9 +79,14 @@ class ArticleReferenceAdminController extends BaseController
         $entityManager->persist($articleReference);
         $entityManager->flush();
 
-        return $this->redirectToRoute('admin_article_edit', [
-            'id' => $article->getId(),
-        ]);
+        return $this->json(
+            $articleReference,
+            201,
+            [],
+            [
+                'groups' => ['main'],
+            ]
+        );
     }
 
     /**
