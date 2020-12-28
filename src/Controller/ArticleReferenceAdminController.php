@@ -149,6 +149,7 @@ class ArticleReferenceAdminController extends BaseController
      * @param EntityManagerInterface $entityManager
      * @param SerializerInterface $serializer
      * @param Request $request
+     * @param ValidatorInterface $validator
      * @return Response
      */
     public function updateArticleReference(
@@ -156,7 +157,8 @@ class ArticleReferenceAdminController extends BaseController
         UploaderHelper $uploaderHelper,
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
-        Request $request
+        Request $request,
+        ValidatorInterface $validator
     )
     {
         $serializer->deserialize(
@@ -169,6 +171,11 @@ class ArticleReferenceAdminController extends BaseController
 
             ]
         );
+
+        $violations = $validator->validate($articleReference);
+        if ($violations->count() > 0) {
+            return $this->json($violations, 400);
+        }
 
         $entityManager->persist($articleReference);
         $entityManager->flush();
@@ -191,7 +198,11 @@ class ArticleReferenceAdminController extends BaseController
      * @return Response
      * @throws FileNotFoundException
      */
-    public function deleteArticleReference(ArticleReference $articleReference, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager)
+    public function deleteArticleReference(
+        ArticleReference $articleReference,
+        UploaderHelper $uploaderHelper,
+        EntityManagerInterface $entityManager
+    )
     {
         $entityManager->remove($articleReference);
         $entityManager->flush();
