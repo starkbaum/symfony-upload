@@ -111,6 +111,39 @@ class ArticleReferenceAdminController extends BaseController
     }
 
     /**
+     * @Route("/admin/article/{id}/references/reorder", name="admin_article_reorder_references", methods="POST")
+     * @param Article $article
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     */
+    public function reorderArticleReferences(Article $article, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $orderedIds = json_decode($request->getContent(), true);
+
+        if ($orderedIds === false) {
+            return $this->json(['detail' => 'Invalid body'], 400);
+        }
+
+        $orderedIds = array_flip($orderedIds);
+
+        foreach ($article->getArticleReferences() as $articleReference) {
+            $articleReference->setPosition($orderedIds[$articleReference->getId()]);
+        }
+
+        $entityManager->flush();
+
+        return $this->json(
+            $article->getArticleReferences(),
+            200,
+            [],
+            [
+                'groups' => 'main',
+            ]
+        );
+    }
+
+    /**
      * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods="GET")
      * @param ArticleReference $articleReference
      * @param UploaderHelper $uploaderHelper

@@ -89,6 +89,7 @@ class Article
 
     /**
      * @ORM\OneToMany(targetEntity=ArticleReference::class, mappedBy="article")
+     * @ORM\OrderBy({"position"="ASC"})
      */
     private $articleReferences;
 
