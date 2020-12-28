@@ -10,6 +10,7 @@ use App\Service\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -28,7 +29,7 @@ class ArticleReferenceAdminController extends BaseController
      * @param UploaderHelper $uploaderHelper
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
-     * @return RedirectResponse
+     * @return JsonResponse|RedirectResponse
      */
     public function uploadArticleReference(
         Article $article,
@@ -90,7 +91,24 @@ class ArticleReferenceAdminController extends BaseController
     }
 
     /**
-     * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods={"GET"})
+     * @Route("/admin/article/{id}/references", name="admin_article_list_references", methods="GET")
+     * @param Article $article
+     * @return JsonResponse
+     */
+    public function getArticleReference(Article $article): JsonResponse
+    {
+        return $this->json(
+            $article->getArticleReferences(),
+            200,
+            [],
+            [
+                'groups' => 'main',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods="GET")
      * @param ArticleReference $articleReference
      * @param UploaderHelper $uploaderHelper
      * @return StreamedResponse
