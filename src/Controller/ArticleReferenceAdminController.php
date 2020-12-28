@@ -9,8 +9,10 @@ use App\Entity\ArticleReference;
 use App\Service\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotNull;
@@ -93,11 +95,31 @@ class ArticleReferenceAdminController extends BaseController
      * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods={"GET"})
      * @param ArticleReference $articleReference
      * @param UploaderHelper $uploaderHelper
+     * @return StreamedResponse
      */
     public function downloadArticleReference(ArticleReference $articleReference, UploaderHelper $uploaderHelper)
     {
         $article = $articleReference->getArticle();
 
-        $this->denyAccessUnlessGranted('MANAGE');
+        //$this->denyAccessUnlessGranted('MANAGE');
+
+        $response = new StreamedResponse(function () use ($articleReference, $uploaderHelper) {
+            $outputStream = fopen('php://output', 'wb');
+            $fileStream = $uploaderHelper->readStream($articleReference->getFilePath(), false);
+
+            stream_copy_to_stream($fileStream, $outputStream);
+        });
+
+        $response->headers->set('Content-Type', $articleReference->getMimeType());
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $articleReference->getOriginalFilename()
+        );
+
+        //dd($disposition);
+
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
     }
 }
